@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 /**
  *
- * @author Genevieve Suwara
+ * @author Genevieve Suwara, Kevin Ripley
  */
 public class Security1 {
 
@@ -21,16 +21,19 @@ public class Security1 {
         String number;
         String date;
         String cvc;
-
         LinkedList results;
+        
         //set results to the matched strings found in getInfo
         results = getInfo();
 
+        //set count to the number of matches found
         int count = results.size();
 
         System.out.println(count + " credit card record(s) found.\n");
+        
+        //iterate through results
         for (int i = 1; i <= results.size(); i++) {
-            //extract info from string and print
+            //extract info from result string
             String result = (String) results.get(i - 1);
             String[] fields = result.split("\\^");
 
@@ -41,6 +44,7 @@ public class Security1 {
             date = fields[2].substring(2, 4) + "/20" + fields[2].substring(0, 2);
             cvc = fields[2].substring(4, 7);
 
+            //print result info
             System.out.println("<Information of record " + i + ">");
             System.out.println("Cardholder's Name: " + name);
             System.out.println("Card Number: " + number);
@@ -50,41 +54,38 @@ public class Security1 {
     }
 
     public static LinkedList getInfo() throws FileNotFoundException, IOException {
-        //open file
-        byte[] data = new byte[554277];
-        int readBytes;
+        byte[] data;
+        data = new byte[200000000];
 
         try {
-            FileInputStream in = new FileInputStream(new File("/Users/kevinripley/Downloads/memorydump(1).dmp"));
-            while ((readBytes = in.read(data)) != -1) {
-                
-            }
-            in.close();
+            //open file
+            FileInputStream file = new FileInputStream(new File("C:\\Users\\smart_000\\Documents\\memorydump(1).dmp"));
+            //read bytes into data array
+            file.read(data);
+            //close file
+            file.close();
         } catch (Exception e) {
         }
 
-        File file = new File("/Users/kevinripley/Downloads/memorydump(1).dmp");
-
         LinkedList matches;
-
         
-            String decodeString = new String(data, "UTF-8");
-            
+        //convert data into readable format
+        String decodeString = new String(data, "UTF-8");
 
-            Pattern pattern;
+        Pattern pattern;
 
-            //set pattern to be matched
-            pattern = Pattern.compile("\\%(B)\\d*\\^\\p{Alpha}*\\/\\p{Alpha}*\\^\\d*\\w*\\?");
+        //set pattern to be matched
+        pattern = Pattern.compile("\\%(B)\\d*\\^\\p{Alpha}*\\/\\p{Alpha}*\\^\\d*\\w*\\?");
 
-            Matcher matcher;
-            matcher = pattern.matcher(decodeString);
-            matches = new LinkedList();
+        Matcher matcher;
+        matcher = pattern.matcher(decodeString);
+        matches = new LinkedList();
 
-            //read regex matches into matches
-            while (matcher.find()) {
-                matches.add(matcher.group());
-            }
-        
+        //read regex matches into matches
+        while (matcher.find()) {
+            matches.add(matcher.group());
+        }
+
         return matches;
     }
 
